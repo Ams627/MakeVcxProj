@@ -19,8 +19,12 @@ namespace MakeVcxProj
                 var linklibs = new[] { "ws2_32.lib" };
                 var includePaths = new[] { "K:\\include", "Q:\\include" };
                 var moddef = "ll32.def";
-                var project = new VcxProj("wonk.vcxproj", true, cfiles, hfiles, includePaths, predefs, linklibs, moddef, "15.0", "v141", "10.0.16299.0");
-                project.Write("temp.v1");
+
+                // create the Vcxproj file: (it's an XML document):
+                var project = new VcxProj("wonk", true, cfiles, hfiles, includePaths, predefs, linklibs, moddef, "15.0", "v141", "10.0.16299.0");
+
+                // write it out:
+                project.Write("wonk.vcxproj");
             }
             catch (Exception ex)
             {

@@ -30,6 +30,21 @@ namespace MakeVcxProj
             new Configuration {Name = "Release|x64", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"}
         };
         private XDocument _xdocument;
+
+        /// <summary>
+        /// Generate a .vcxproj file for Visual Studio 2017 (might work for 2015 - I don't know!)
+        /// </summary>
+        /// <param name="projectName">Name of the project - THIS IS NOT THE FILENAME OF THE VCXPROJ. Normally it is the project filename without the vcxproj extension</param>
+        /// <param name="isDll">true for a DLL, false for an EXE</param>
+        /// <param name="cfiles">a list of C or CPP files to include in the project</param>
+        /// <param name="hfiles">a list of header files to include in the project</param>
+        /// <param name="includePaths">a list of extra include paths to include in the project</param>
+        /// <param name="preProcessorDefs">a list of extra preprocessor definitions</param>
+        /// <param name="libs">a list of extra libraries to link (normally .libs)</param>
+        /// <param name="moduleDefinitionFile">a single module definition file - normally has an extension .def</param>
+        /// <param name="toolsVersion">A string indicating the tools version - e.g 15.0 for Visual Studio 2017</param>
+        /// <param name="platformToolset">e.g. v141 for Windows 2017</param>
+        /// <param name="windowsTargetPlatformVersion">e.g. 10.0.16299.0 for windows 10</param>
         public VcxProj(
             string projectName,
             bool isDll,
@@ -108,7 +123,6 @@ namespace MakeVcxProj
                             new XElement(ns + "Import", new XAttribute("Project", @"$(VCTargetsPath)\Microsoft.Cpp.targets")),
                             new XElement(ns + "ImportGroup", new XAttribute("Label", "ExtensionTargets")))
                             );
-            System.Console.WriteLine();
         }
 
         public void Write(string filename)
