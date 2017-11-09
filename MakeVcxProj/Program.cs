@@ -13,6 +13,10 @@ namespace MakeVcxProj
         {
             try
             {
+                var cfiles = new List<string> { "a.c", "b.c" };
+                var hfiles = new List<string> { "x.h", "y.h" };
+                var project = new VcxProj("wonk", cfiles, hfiles, "15.0", "v141", "10.0.16299.0");
+                project.Write("temp.v1");
             }
             catch (Exception ex)
             {

@@ -65,7 +65,12 @@ namespace MakeVcxProj
                         _configurations.Select(config =>
                             new XElement("PropertyGroup", new XAttribute("Condition", $"'$(Configuration)|$(Platform)'=='{config}'"),
                             new XElement("LinkIncremental", config.LinkIncremental.ToString().ToLower()),
-                            includePaths.Count() > 0 ? new XElement("IncludePath", "" + "$(WindowsSDK_IncludePath);" + string.Join(";", includePaths)) : null,
+                            includePaths.Count() > 0 ? new XElement("IncludePath", "" + "$(WindowsSDK_IncludePath);" + string.Join(";", includePaths)) : null)),
+                        _configurations.Select(config =>
+                        new XElement("ItemDefinitionGroup", new XAttribute("Condition", "'$(Configuration)|$(Platform)'=='Debug|Win32'"),
+                            new XElement("ClCompile", new XElement("PrecompiledHeader", "Not"
+
+
 
 
 
