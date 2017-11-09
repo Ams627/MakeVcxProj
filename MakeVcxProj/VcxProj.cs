@@ -15,7 +15,7 @@ namespace MakeVcxProj
         public string Optimise { get; set; }
         public bool ComdatFolding { get; set; } = false;
         public bool OptimiseReferences { get; set; } = false;
-        public bool WholeProgramOptimise { get; set; }
+        public bool WholeProgramOptimise { get; set; } = false;
         public string ConfigurationType { get; set; }
     }
     class VcxProj
