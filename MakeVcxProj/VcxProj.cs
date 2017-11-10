@@ -29,7 +29,8 @@ namespace MakeVcxProj
             new Configuration {Name = "Debug|x64", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
             new Configuration {Name = "Release|x64", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"}
         };
-        private XDocument _xdocument;
+        private XDocument _xdocProject;
+        private XDocument _xdocProjectFilters;
 
         /// <summary>
         /// Generate a .vcxproj file for Visual Studio 2017 (might work for 2015 - I don't know!)
@@ -59,10 +60,9 @@ namespace MakeVcxProj
             _configurations.ForEach(x => x.ConfigurationType = isDll ? "DynamicLibrary" : x.ConfigurationType = "Application");
 
             XNamespace ns = "http://schemas.microsoft.com/developer/msbuild/2003";
-            _xdocument = new XDocument(
+            _xdocProject = new XDocument(
                 new XDeclaration("1.0", "utf-8", "no"),
                     new XElement(ns + "Project", new XAttribute("DefaultTargets", "Build"), new XAttribute("ToolsVersion", toolsVersion),
-//                        new XAttribute("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003"),
                         new XElement(ns + "ItemGroup", new XAttribute("Label", "ProjectConfigurations"),
                         _configurations.Select(config => new XElement(ns + "ProjectConfiguration", new XAttribute("Include", config.Name),
                             new XElement(ns + "Configuration", config.IsDebug ? "Debug" : "Release"),
@@ -105,7 +105,7 @@ namespace MakeVcxProj
                                 new XElement(ns + "WarningLevel", "Level3"),
                                 new XElement(ns + "Optimization", config.Optimise),
                                 new XElement(ns + "SDLCheck", "true"),
-                                new XElement(ns + "PreprocessorDefinitions", (config.IsDebug ? "_DEBUG" : "") + string.Join(";", preProcessorDefs) + "% (PreprocessorDefinitions)")),
+                                new XElement(ns + "PreprocessorDefinitions", (config.IsDebug ? "_DEBUG;" : "") + string.Join(";", preProcessorDefs) + ";%(PreprocessorDefinitions)")),
                             new XElement(ns + "Link",
                                 new XElement(ns + "SubSystem", "Windows"),
                                 new XElement(ns + "ModuleDefinitionFile", moduleDefinitionFile),
@@ -123,11 +123,35 @@ namespace MakeVcxProj
                             new XElement(ns + "Import", new XAttribute("Project", @"$(VCTargetsPath)\Microsoft.Cpp.targets")),
                             new XElement(ns + "ImportGroup", new XAttribute("Label", "ExtensionTargets")))
                             );
+
+            _xdocProjectFilters = new XDocument(
+                    new XDeclaration("1.0", "utf-8", "no"),
+                    new XElement(ns + "Project", new XAttribute("DefaultTargets", "Build"), new XAttribute("ToolsVersion", "4.0"),
+                        new XElement(ns + "ItemGroup",
+                            new XElement(ns + "Filter", new XAttribute("Include", "Source Files"),
+                                new XElement(ns + "UniqueIdentifier", "{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"),
+                                new XElement(ns + "Extensions", "cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx")),
+                            new XElement(ns + "Filter", new XAttribute("Include", "Header Files"),
+                                new XElement(ns + "UniqueIdentifier", "{93995380-89BD-4b04-88EB-625FBE52EBFB}"),
+                                new XElement(ns + "Extensions", "cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx")),
+                            new XElement(ns + "Filter", new XAttribute("Include", "Resource Files"),
+                                new XElement(ns + "UniqueIdentifier", "{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"),
+                                new XElement(ns + "Extensions", "cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx")),
+                        new XElement(ns + "ItemGroup",
+                            new XElement(ns + "ClInclude", new XAttribute("Include", "stdafx.h"),
+                                new XElement(ns + "Filter", "Header Files"))),
+                        new XElement(ns + "ItemGroup",
+                            new XElement(ns + "ClCompile", new XAttribute("Include", "stdafx.cpp"),
+                                new XElement(ns + "Filter", "Source Files")))
+                                )));
+
         }
 
-        public void Write(string filename)
+        public void Write(string projectFilename)
         {
-            _xdocument.Save(filename);
+            _xdocProject.Save(projectFilename);
+            var filterFilename = projectFilename + ".filters";
+            _xdocProjectFilters.Save(filterFilename);
         }
     }
 }
