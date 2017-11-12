@@ -21,7 +21,7 @@ namespace MakeVcxProj
                 var moddef = "ll32.def";
 
                 // create the Vcxproj file: (it's an XML document):
-                var project = new VcxProj("wonk", true, cfiles, hfiles, includePaths, predefs, linklibs, moddef, "15.0", "v141", "10.0.16299.0");
+                var project = new VcxProj("wonk", true, false, cfiles, hfiles, includePaths, predefs, linklibs, moddef, "15.0", "v141", "10.0.16299.0");
 
                 // write it out:
                 project.Write("wonk.vcxproj");

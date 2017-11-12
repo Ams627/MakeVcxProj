@@ -24,10 +24,10 @@ namespace MakeVcxProj
             "user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;" +
             "oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib";
         private List<Configuration> _configurations = new List<Configuration> {
-            new Configuration {Name = "Debug|Win32", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Release|Win32", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Debug|x64", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Release|x64", IsDebug= true, Is32Bit = true, ConfigurationType = "DynamicLibrary"}
+            new Configuration {Name = "Debug|Win32", IsDebug = true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
+            new Configuration {Name = "Release|Win32", IsDebug = false, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
+            new Configuration {Name = "Debug|x64", IsDebug = true, Is32Bit = false, ConfigurationType = "DynamicLibrary"},
+            new Configuration {Name = "Release|x64", IsDebug = false, Is32Bit = false, ConfigurationType = "DynamicLibrary"}
         };
         private XDocument _xdocProject;
         private XDocument _xdocProjectFilters;
@@ -37,6 +37,7 @@ namespace MakeVcxProj
         /// </summary>
         /// <param name="projectName">Name of the project - THIS IS NOT THE FILENAME OF THE VCXPROJ. Normally it is the project filename without the vcxproj extension</param>
         /// <param name="isDll">true for a DLL, false for an EXE</param>
+        /// <param name="isConsole">true for a console program, false for a windows program</param>
         /// <param name="cfiles">a list of C or CPP files to include in the project</param>
         /// <param name="hfiles">a list of header files to include in the project</param>
         /// <param name="includePaths">a list of extra include paths to include in the project</param>
@@ -49,6 +50,7 @@ namespace MakeVcxProj
         public VcxProj(
             string projectName,
             bool isDll,
+            bool isConsole,
             IEnumerable<string> cfiles, 
             IEnumerable<string> hfiles,
             IEnumerable<string> includePaths,
@@ -57,7 +59,14 @@ namespace MakeVcxProj
             string moduleDefinitionFile,
             string toolsVersion, string platformToolset, string windowsTargetPlatformVersion)
         {
-            _configurations.ForEach(x => x.ConfigurationType = isDll ? "DynamicLibrary" : x.ConfigurationType = "Application");
+            for (var i = 0; i < _configurations.Count(); ++i)
+            {
+                _configurations[i].ConfigurationType = isDll ? "DynamicLibrary" : "Application";
+                _configurations[i].ComdatFolding = !_configurations[i].IsDebug;
+                _configurations[i].WholeProgramOptimise = !_configurations[i].IsDebug;
+                _configurations[i].OptimiseReferences = !_configurations[i].IsDebug;
+                _configurations[i].Optimise = _configurations[i].IsDebug ? "Disabled" : "MaxSpeed";
+            }
 
             XNamespace ns = "http://schemas.microsoft.com/developer/msbuild/2003";
             _xdocProject = new XDocument(
@@ -105,14 +114,17 @@ namespace MakeVcxProj
                                 new XElement(ns + "WarningLevel", "Level3"),
                                 new XElement(ns + "Optimization", config.Optimise),
                                 new XElement(ns + "SDLCheck", "true"),
-                                new XElement(ns + "PreprocessorDefinitions", (config.IsDebug ? "_DEBUG;" : "") + string.Join(";", preProcessorDefs) + ";%(PreprocessorDefinitions)")),
+                                new XElement(ns + "PreprocessorDefinitions",
+                                                (config.IsDebug ? "_DEBUG;" : "NDEBUG;") +
+                                                (isConsole ? "_CONSOLE;" : "") +
+                                                string.Join(";", preProcessorDefs) + ";%(PreprocessorDefinitions)")),
                             new XElement(ns + "Link",
-                                new XElement(ns + "SubSystem", "Windows"),
+                                new XElement(ns + "SubSystem", isConsole ? "Console" : "Windows"),
                                 new XElement(ns + "ModuleDefinitionFile", moduleDefinitionFile),
                                 new XElement(ns + "GenerateDebugInformation", "true"),
                                 new XElement(ns + "AdditionalDependencies", $"{string.Join(";", libs)};{_defaultLibs};%(AdditionalDependencies)"),
-                                config.ComdatFolding ? new XElement("EnableCOMDATFolding", "true") : null,
-                                config.OptimiseReferences ? new XElement("OptimizeReferences", "true") : null))),
+                                config.ComdatFolding ? new XElement(ns + "EnableCOMDATFolding", "true") : null,
+                                config.OptimiseReferences ? new XElement(ns + "OptimizeReferences", "true") : null))),
                             new XElement(ns + "ItemGroup",
                                 hfiles.Select(headerfile => new XElement(ns + "ClInclude", new XAttribute("Include", headerfile)))),
                             new XElement(ns + "ItemGroup",
