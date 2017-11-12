@@ -24,10 +24,10 @@ namespace MakeVcxProj
             "user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;" +
             "oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib";
         private List<Configuration> _configurations = new List<Configuration> {
-            new Configuration {Name = "Debug|Win32", IsDebug = true, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Release|Win32", IsDebug = false, Is32Bit = true, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Debug|x64", IsDebug = true, Is32Bit = false, ConfigurationType = "DynamicLibrary"},
-            new Configuration {Name = "Release|x64", IsDebug = false, Is32Bit = false, ConfigurationType = "DynamicLibrary"}
+            new Configuration {Name = "Debug|Win32", IsDebug = true, Is32Bit = true },
+            new Configuration {Name = "Release|Win32", IsDebug = false, Is32Bit = true },
+            new Configuration {Name = "Debug|x64", IsDebug = true, Is32Bit = false },
+            new Configuration {Name = "Release|x64", IsDebug = false, Is32Bit = false }
         };
         private XDocument _xdocProject;
         private XDocument _xdocProjectFilters;
