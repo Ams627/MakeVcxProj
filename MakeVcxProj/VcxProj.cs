@@ -6,6 +6,7 @@ using System.Xml.Linq;
 
 namespace MakeVcxProj
 {
+
     class Configuration
     {
         public string Name { get; set; }
@@ -31,6 +32,7 @@ namespace MakeVcxProj
         };
         private XDocument _xdocProject;
         private XDocument _xdocProjectFilters;
+        private Guid _projectGuid;
 
         /// <summary>
         /// Generate a .vcxproj file for Visual Studio 2017 (might work for 2015 - I don't know!)
@@ -59,6 +61,7 @@ namespace MakeVcxProj
             string moduleDefinitionFile,
             string toolsVersion, string platformToolset, string windowsTargetPlatformVersion)
         {
+            _projectGuid = Guid.NewGuid();
             for (var i = 0; i < _configurations.Count(); ++i)
             {
                 _configurations[i].ConfigurationType = isDll ? "DynamicLibrary" : "Application";
@@ -78,7 +81,7 @@ namespace MakeVcxProj
                             new XElement(ns + "Platform", config.Is32Bit ? "Win32" : "x64")))),
                     new XElement(ns + "PropertyGroup", new XAttribute("Label", "Globals"),
                         new XElement(ns + "VCProjectVersion", toolsVersion),
-                        new XElement(ns + "ProjectGuid", Guid.NewGuid()),
+                        new XElement(ns + "ProjectGuid", _projectGuid),
                         new XElement(ns + "Keyword", "Win32Proj"),
                         new XElement(ns + "RootNamespace", projectName),
                         new XElement(ns + "WindowsTargetPlatformVersion", windowsTargetPlatformVersion)),
@@ -158,6 +161,8 @@ namespace MakeVcxProj
                                 )));
 
         }
+
+        public Guid ProjectGuid => _projectGuid;
 
         public void Write(string projectFilename)
         {
