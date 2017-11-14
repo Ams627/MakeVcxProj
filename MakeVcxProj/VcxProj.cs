@@ -107,7 +107,7 @@ namespace MakeVcxProj
                                 new XAttribute("Label", "LocalAppDataPlatform")))),
                         new XElement(ns + "PropertyGroup", new XAttribute("Label", "UserMacros")),
                         _configurations.Select(config =>
-                            new XElement(ns + "PropertyGroup", new XAttribute("Condition", $"'$(Configuration)|$(Platform)'=='{config}'"),
+                            new XElement(ns + "PropertyGroup", new XAttribute("Condition", $"'$(Configuration)|$(Platform)'=='{config.Name}'"),
                             new XElement(ns + "LinkIncremental", config.LinkIncremental.ToString().ToLower()),
                             includePaths.Count() > 0 ? new XElement(ns + "IncludePath", "" + "$(WindowsSDK_IncludePath);" + string.Join(";", includePaths)) : null)),
                         _configurations.Select(config =>
