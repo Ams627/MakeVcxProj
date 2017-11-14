@@ -100,7 +100,7 @@ namespace MakeVcxProj
                         new XElement(ns + "ImportGroup", new XAttribute("Label", "Shared")),
                         _configurations.Select(config =>
                         new XElement(ns + "ImportGroup", new XAttribute("Label", "PropertySheets"),
-                            new XAttribute("Condition", $"'$(Configuration)|$(Platform)'=='{config}'"),
+                            new XAttribute("Condition", $"'$(Configuration)|$(Platform)'=='{config.Name}'"),
                             new XElement(ns + "Import",
                                 new XAttribute("Project", @"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"),
                                 new XAttribute("Condition", @"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"),
