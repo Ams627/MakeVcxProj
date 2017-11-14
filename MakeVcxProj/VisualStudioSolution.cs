@@ -80,7 +80,7 @@ namespace MakeVcxProj
                 file.WriteLine("# Visual Studio 14");
                 file.WriteLine($"VisualStudioVersion = {_visualStudioVersion}");
                 var projectsSection = string.Join("\n", _projects.Select(
-                    p=>$"Project({{\"{p.ProjectTypeGuid}\"}} = \"{p.Name}\", \"{p.Path}\" \"{{{p.ProjectGuid}}}\"\"\nEndProject"));
+                    p=>$"Project(\"{{{p.ProjectTypeGuid}}}\") = \"{p.Name}\", \"{p.Path}\", \"{{{p.ProjectGuid}}}\"\nEndProject"));
                 file.WriteLine(projectsSection);
                 file.WriteLine("GlobalSection(SolutionConfigurationPlatforms) = preSolution");
                 file.WriteLine("	Debug|x64 = Debug|x64");

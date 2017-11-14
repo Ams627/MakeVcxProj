@@ -28,7 +28,7 @@ namespace MakeVcxProj
 
                 // get the Guid for the project we just wrote:
                 var guid = project.ProjectGuid;
-                var solution = new VisualStudioSolution("S1");
+                var solution = new VisualStudioSolution("s1.sln");
                 solution.AddProject("wonk", "wonk\\wonk.vcxproj", guid, VisualStudioSolution.ProjectTypeGuids.CPP);
                 solution.Write();
             }
